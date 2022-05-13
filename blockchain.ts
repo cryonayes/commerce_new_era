@@ -1,7 +1,7 @@
 import * as crypto from 'crypto';
 
-// Yapılan işlemlerin durumunu belirlemek için enum sınıfı.  
-export enum Status {
+export enum Status
+{
 	SatisOncesi = "Satış Öncesi",
 	Hazirlanma = "Hazırlanma",
 	KargoCikis = "Kargo Çıkış",
@@ -10,30 +10,26 @@ export enum Status {
 	Iade = "İade"
 }
 
-// Yapılan işlemlerin tutulduğu bilgi sınıfı.
 export class Transaction
 {
-	constructor(
-		public customerID: string, 
-		public signerID: string,
-		public itemID: string,
-		public status: Status
-	){}
+	constructor(public customerKey: string, public signerPublicKey: string, public itemID: string, public status: Status)
+	{}
 
 	public toString(): string { return JSON.stringify(this); }
 }
 
 export class Block
 {
+
 	public nonce = Math.round(Math.random() * 420314159265);
-	constructor(public transaction: Transaction, public previousHash: string, public timeStamp: number = Date.now())
+	constructor(public prevHash: string, public transaction: Transaction, public ts = Date.now())
 	{}
-	
-	get hash(): string 
+
+	get hash()
 	{
 		const block2Str = JSON.stringify(this);
-		const hash = crypto.createHash('sha256');
-		hash.update(block2Str);
+		const hash = crypto.createHash('SHA256');
+		hash.update(block2Str).end();
 		return hash.digest('hex');
 	}
 }
@@ -41,27 +37,35 @@ export class Block
 export class Chain
 {
 	public static instance = new Chain();
-	private blocks: Block[] = [];
-	
+
+	private chain: Block[];
+
 	constructor()
 	{
-		this.blocks = [
-			new Block(new Transaction("genesis", "NULL", "NULL", Status.Teslim), "NULL")
-		]
+		this.chain = [
+			new Block('', new Transaction('genesis', 'NULL', 'NULL', Status.Teslim))
+		];
 	}
 
-	get latestBlock(): Block { return this.blocks[this.blocks.length - 1]; }
-
-	public addBlock(): void
+	addBlock(transaction: Transaction, senderPublicKey: string, signature: Buffer)
 	{
-		// Gerekli kontrollerin ardından block zincire eklenecek..
+		const verify = crypto.createVerify('SHA256');
+		verify.update(transaction.toString());
+
+		const isValid = verify.verify(senderPublicKey, signature);
+		if (isValid) {
+			const newBlock = new Block(this.latestBlock.hash, transaction);
+			this.chain.push(newBlock);
+		}
 	}
+
+	get latestBlock() { return this.chain[this.chain.length - 1]; }
 }
 
 export class Peer
 {
 	public publicKey: string;
-	public secretKey: string;
+	public privateKey: string;
 
 	constructor()
 	{
@@ -70,12 +74,16 @@ export class Peer
 			publicKeyEncoding: { type: 'spki', format: 'pem' },
 			privateKeyEncoding: { type: 'pkcs8', format: 'pem' },
 		});
+		this.privateKey = keypair.privateKey;
 		this.publicKey = keypair.publicKey;
-		this.secretKey = keypair.privateKey;
 	}
 
-	makeTransaction(customerID: string, targetPublicKey: string)
+	makeTransaction(status: Status, itemID: string, signerPublicKey: string)
 	{
-		// TODO(Yapılan işlemin sign edilmesi ve blokzincire eklenmesi implemente edilecek)
+		const transaction = new Transaction(this.publicKey, signerPublicKey, itemID,status);
+		const sign = crypto.createSign('SHA256');
+		sign.update(transaction.toString()).end();
+		const signature = sign.sign(this.privateKey); 
+		Chain.instance.addBlock(transaction, this.publicKey, signature);
 	}
 }
