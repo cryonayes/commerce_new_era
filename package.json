@@ -1,0 +1,26 @@
+{
+  "name": "ft_blockchain",
+  "version": "1.0.0",
+  "description": "New era of E-Commerce",
+  "main": "main.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/cryonayes/commerce_new_era.git"
+  },
+  "keywords": [
+    "acikhack2022"
+  ],
+  "author": "Ayberk ESER, Fatih ÇİL, Görkem SEVER, Muhammet Ali DURMUŞ",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/cryonayes/commerce_new_era/issues"
+  },
+  "homepage": "https://github.com/cryonayes/commerce_new_era#readme",
+  "devDependencies": {
+    "@types/node": "^17.0.33",
+    "typescript": "^4.6.4"
+  }
+}
