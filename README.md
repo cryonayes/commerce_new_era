@@ -12,9 +12,13 @@
         Ürünle birlikte kullanıcıya gelen özel linke sahip QR kod araciligiyla kullanıcı ürün hakkında bilgilere ulaşabilecek.
     
     Müşteri ürün tedariği süreci içerisinde yaşanabilecek potansiyel sorunlar hakkında kanıt elde etmek amaçlı blockchain mimarisinden yararlanabilir.
-    
-    ---------------------
-    TypeScript kullandigimiz icin;
-        [1]: Nasil kullandigimiza dagir kurulum adimlarini README.md'ye eklenecek.
-    
-        [2]: 
+
+## Kurulum İçin Gerekli İşlemler
+
+### Linux İçin:
+```
+sudo apt install nodejs npm
+npm install
+tsc
+node build/main.js
+```
