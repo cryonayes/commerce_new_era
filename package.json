@@ -20,10 +20,12 @@
   },
   "homepage": "https://github.com/cryonayes/commerce_new_era#readme",
   "devDependencies": {
+    "@types/express": "github:types/npm-express",
     "@types/node": "^17.0.33",
     "typescript": "^4.6.4"
   },
   "dependencies": {
-    "crypto": "^1.0.1"
+    "crypto": "^1.0.1",
+    "express": "^4.18.1"
   }
 }

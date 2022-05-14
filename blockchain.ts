@@ -2,17 +2,13 @@ import * as crypto from 'crypto';
 
 export enum Status
 {
-	SatisOncesi = "Satış Öncesi",
-	Hazirlanma = "Hazırlanma",
-	KargoCikis = "Kargo Çıkış",
-	Dagitim = "Dağıtım",
-	Teslim = "Teslim",
-	Iade = "İade"
+	Orijinal = "Orijinal",
+	Sahte = "Sahte"
 }
 
-export class Transaction
+export class ItemInfo
 {
-	constructor(public customerKey: string, public signerPublicKey: string, public itemID: string, public status: Status)
+	constructor(public signerPublicKey: string, public itemID: string, public status: Status, public madeIn: string, public madeAt: number)
 	{}
 
 	public toString(): string { return JSON.stringify(this); }
@@ -22,7 +18,7 @@ export class Block
 {
 	public nonce = Math.round(Math.random() * 4203141592);
 
-	constructor(public prevHash: string, public transaction: Transaction, public ts = Date.now())
+	constructor(public prevHash: string, public itemInfo: ItemInfo, public ts = Date.now())
 	{}
 
 	get hash()
@@ -37,14 +33,23 @@ export class Block
 export class Chain
 {
 	public static instance = new Chain();
-
-	private chain: Block[];
+	public chain: Block[];
 
 	constructor()
 	{
 		this.chain = [
-			new Block('', new Transaction('genesis', 'NULL', 'NULL', Status.Teslim))
+			new Block('', new ItemInfo('NULL', 'NULL', Status.Orijinal, 'Turkey', Date.now()))
 		];
+	}
+
+	public findBlockByItemID(itemID: string): Block
+	{
+		for (let i = 0; i < this.chain.length; i++)
+		{
+			if (this.chain[i].itemInfo.itemID === itemID)
+				return this.chain[i];
+		}
+		return null;
 	}
 
 	mine(nonce: number): number
@@ -63,7 +68,7 @@ export class Chain
 		}
 	}
 
-	addBlock(transaction: Transaction, signerPublicKey: string, signature: Buffer)
+	addBlock(transaction: ItemInfo, signerPublicKey: string, signature: Buffer)
 	{
 		const verify = crypto.createVerify('SHA256');
 		verify.update(transaction.toString());
@@ -95,9 +100,9 @@ export class Peer
 		this.publicKey = keypair.publicKey;
 	}
 
-	makeTransaction(status: Status, itemID: string, signerPublicKey: string)
+	makeTransaction(status: Status, itemID: string, signerPublicKey: string, madeIn: string, madeAt: number)
 	{
-		const transaction = new Transaction(this.publicKey, signerPublicKey, itemID,status);
+		const transaction = new ItemInfo(signerPublicKey, itemID, status, madeIn, madeAt);
 		const sign = crypto.createSign('SHA256');
 		sign.update(transaction.toString()).end();
 		const signature = sign.sign(this.privateKey); 

@@ -1,13 +1,33 @@
 import { Chain, Peer, Status} from "./blockchain";
+import express = require('express');
 
-const Satici = new Peer();
-const Alici = new Peer();
-const Kargo = new Peer();
+import path = require("path/posix");
+import { stat } from "fs";
 
-Satici.makeTransaction(Status.SatisOncesi, "1", Alici.publicKey);
-Satici.makeTransaction(Status.Hazirlanma, "1", Alici.publicKey);
-Kargo.makeTransaction(Status.KargoCikis, "1", Alici.publicKey);
-Kargo.makeTransaction(Status.Dagitim, "1", Alici.publicKey);
-Kargo.makeTransaction(Status.Teslim, "1", Alici.publicKey);
+var app: express.Server = express();
 
-console.log(Chain.instance)
+const Manifacturer = new Peer();
+Manifacturer.makeTransaction(Status.Orijinal, "123", Manifacturer.publicKey, 'Turkey', Date.now());
+
+app.listen(3000, () => { console.log('Server started on port 3000'); });
+
+app.get('/', (req, res: express.Response) => {
+		res.sendFile(path.join(__dirname, '../html', 'index.html'));
+	}
+);
+
+app.get('/ShowBlocks', (req, res: express.Response) => {
+		res.header("Content-Type",'application/json');
+		res.send(JSON.stringify(Chain.instance.chain, null, 4));
+	}
+);
+
+app.get('/AddToChain', (req, res: express.Response) => {
+		let itemId = req.query.itemId;
+		let madeIn = req.query.madeIn;
+		let madeAt = req.query.madeAt;
+		let status = req.query.status;
+		Manifacturer.makeTransaction(status, itemId, Manifacturer.publicKey, madeIn, madeAt);
+		res.redirect('/');
+	}
+);

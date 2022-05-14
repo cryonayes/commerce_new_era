@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>ft_blockchain</title>
+	<script>
+		function httpGet(theUrl)
+		{
+		    var xmlHttp = new XMLHttpRequest();
+		    xmlHttp.open( "GET", theUrl, false );
+		    xmlHttp.send( null );
+		    return xmlHttp.responseText;
+		}
+		function get_blockchain()
+		{
+			var blockchain = httpGet(document.URL + "CustomerKey");
+			document.getElementsByName("customerkey")[0].value = blockchain;
+		}
+	</script>
+</head>
+<body onload="get_blockchain()">
+	<center>
+		<form action="/AddToChain" method="get">
+			<input type="text" name="itemId" placeholder="Item ID">
+			<input type="text" name="madeIn" placeholder="Made in">
+			<input type="text" name="madeAt" placeholder="Made at">
+			<select name="status">
+				<option value="orijinal">Orijinal</option>
+				<option value="sahte">Sahte</option>
+			</select>
+			<input type="submit" value="Add to Chain">
+		</form>
+		<a href="/ShowBlocks" style="color: #ff0000; text-decoration: none;">Show Blocks</a>
+	</center>
+</body>
+</html>
