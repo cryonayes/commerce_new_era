@@ -62,7 +62,7 @@ export class Chain
 			hash.update((nonce + solution).toString()).end();
 			const attempt = hash.digest('hex');
 		  
-			if(attempt.substring(0,4) === '0000')
+			if(attempt.substring(0,2) === '00')
 				return solution;
 			solution += 1;
 		}
