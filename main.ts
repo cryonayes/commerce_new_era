@@ -6,7 +6,6 @@ import qr = require("qrcode");
 var app: express.Server = express();
 
 const Manifacturer = new Peer();
-Manifacturer.makeTransaction(Status.Orijinal, "123", Manifacturer.publicKey, 'Turkey', Date.now());
 
 app.listen(3000, () => { console.log('Server started on port 3000'); });
 
@@ -31,8 +30,11 @@ app.get('/AddToChain', (req, res: express.Response) => {
 		let itemId = req.query.itemId;
 		let madeIn = req.query.madeIn;
 		let madeAt = req.query.madeAt;
+		let madeBy = req.query.madeBy;
+		let TESF = req.query.tesf;
 		let status = req.query.status;
-		Manifacturer.makeTransaction(status, itemId, Manifacturer.publicKey, madeIn, madeAt);
+
+		Manifacturer.makeTransaction(status, itemId, Manifacturer.publicKey, madeIn, madeBy, madeAt, TESF);
 		res.redirect('/');
 	}
 );

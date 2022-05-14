@@ -3,13 +3,21 @@ import * as crypto from 'crypto';
 export enum Status
 {
 	Orijinal = "Orijinal",
-	Sahte = "Sahte"
+	Replika = "Replika",
+	IkinciEl = "Ikinci El"
 }
 
 export class ItemInfo
 {
-	constructor(public signerPublicKey: string, public itemID: string, public status: Status, public madeIn: string, public madeAt: number)
-	{}
+	constructor(
+		public signerPublicKey: string,
+		public itemID: string,
+		public status: Status,
+		public madeIn: string,
+		public madeBy: string,
+		public madeAt: number,
+		public TESF: number
+	){}
 
 	public toString(): string { return JSON.stringify(this); }
 }
@@ -38,7 +46,7 @@ export class Chain
 	constructor()
 	{
 		this.chain = [
-			new Block('', new ItemInfo('NULL', 'NULL', Status.Orijinal, '42Kocaeli', Date.now()))
+			new Block('', new ItemInfo('NULL', 'NULL', Status.Orijinal, '42Kocaeli', 'NULL', Date.now(), 0))
 		];
 	}
 
@@ -100,9 +108,9 @@ export class Peer
 		this.publicKey = keypair.publicKey;
 	}
 
-	makeTransaction(status: Status, itemID: string, signerPublicKey: string, madeIn: string, madeAt: number)
+	makeTransaction(status: Status, itemID: string, signerPublicKey: string, madeIn: string, madeBy: string, madeAt: number, TESF: number)
 	{
-		const transaction = new ItemInfo(signerPublicKey, itemID, status, madeIn, madeAt);
+		const transaction = new ItemInfo(signerPublicKey, itemID, status, madeIn, madeBy, madeAt, TESF);
 		const sign = crypto.createSign('SHA256');
 		sign.update(transaction.toString()).end();
 		const signature = sign.sign(this.privateKey); 
