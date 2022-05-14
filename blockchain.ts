@@ -20,6 +20,8 @@ export class Transaction
 
 export class Block
 {
+	public nonce = Math.round(Math.random() * 4203141592);
+
 	constructor(public prevHash: string, public transaction: Transaction, public ts = Date.now())
 	{}
 
@@ -45,15 +47,32 @@ export class Chain
 		];
 	}
 
-	addBlock(transaction: Transaction, senderPublicKey: string, signature: Buffer)
+	mine(nonce: number): number
+	{
+		let solution: number = 0;
+		
+		while(true)
+		{
+			const hash = crypto.createHash('MD5');
+			hash.update((nonce + solution).toString()).end();
+			const attempt = hash.digest('hex');
+		  
+			if(attempt.substring(0,4) === '0000')
+				return solution;
+			solution += 1;
+		}
+	}
+
+	addBlock(transaction: Transaction, signerPublicKey: string, signature: Buffer)
 	{
 		const verify = crypto.createVerify('SHA256');
 		verify.update(transaction.toString());
 
-		const isValid = verify.verify(senderPublicKey, signature);
+		const isValid = verify.verify(signerPublicKey, signature);
 		if (!isValid)
 			return;
 		const newBlock = new Block(this.latestBlock.hash, transaction);
+		this.mine(newBlock.nonce);
 		this.chain.push(newBlock);
 	}
 
