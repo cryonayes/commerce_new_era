@@ -1,6 +1,7 @@
 import { Chain, Peer, Status} from "./blockchain";
 import express = require('express');
 import path = require("path/posix");
+import qr = require("qrcode");
 
 var app: express.Server = express();
 
@@ -17,6 +18,12 @@ app.get('/', (_req, res: express.Response) => {
 app.get('/ShowBlocks', (_req, res: express.Response) => {
 		res.header("Content-Type",'application/json');
 		res.send(JSON.stringify(Chain.instance.chain, null, 4));
+	}
+);
+
+app.get('/showLatestBlockQR', (_req, res: express.Response) => {
+		res.header("Content-Type",'image/png');
+		qr.toFileStream(res, JSON.stringify(Chain.instance.chain[Chain.instance.chain.length - 1], null, 4));
 	}
 );
 

@@ -38,7 +38,7 @@ export class Chain
 	constructor()
 	{
 		this.chain = [
-			new Block('', new ItemInfo('NULL', 'NULL', Status.Orijinal, 'Turkey', Date.now()))
+			new Block('', new ItemInfo('NULL', 'NULL', Status.Orijinal, '42Kocaeli', Date.now()))
 		];
 	}
 
