@@ -20,8 +20,6 @@ export class Transaction
 
 export class Block
 {
-
-	public nonce = Math.round(Math.random() * 420314159265);
 	constructor(public prevHash: string, public transaction: Transaction, public ts = Date.now())
 	{}
 
@@ -53,10 +51,10 @@ export class Chain
 		verify.update(transaction.toString());
 
 		const isValid = verify.verify(senderPublicKey, signature);
-		if (isValid) {
-			const newBlock = new Block(this.latestBlock.hash, transaction);
-			this.chain.push(newBlock);
-		}
+		if (!isValid)
+			return;
+		const newBlock = new Block(this.latestBlock.hash, transaction);
+		this.chain.push(newBlock);
 	}
 
 	get latestBlock() { return this.chain[this.chain.length - 1]; }
