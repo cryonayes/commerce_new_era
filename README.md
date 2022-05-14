@@ -22,3 +22,11 @@ npm install
 tsc
 node build/main.js
 ```
+
+### MacOS Icin:
+```
+brew install node; brew install npm
+npm install
+tsc
+node build/main.js
+```
